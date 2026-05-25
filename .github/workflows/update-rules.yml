@@ -1,0 +1,29 @@
+name: Update AdBlock Rules
+
+on:
+  schedule:
+    - cron: '0 0 * * 5' # Запускать каждую пятницу
+  workflow_dispatch: # Кнопка ручного запуска
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Download & Convert EasyList
+        run: python3 convert.py
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update Safari blocker rules from EasyList"
+          file_pattern: "blockerList.json"
